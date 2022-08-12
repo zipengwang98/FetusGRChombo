@@ -1,3 +1,4 @@
+from params import *
 def RHS_alpha(alpha, K, beta_u1,beta_u2,beta_u3, d_l1_alpha, d_l2_alpha, d_l3_alpha):
     rhs = - 2 * alpha * K + (beta_u1 * d_l1_alpha + beta_u2 * d_l2_alpha + beta_u3 * d_l3_alpha)
     return rhs

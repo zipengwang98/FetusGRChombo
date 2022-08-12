@@ -80,9 +80,8 @@ def physical_metric(bar_gamma, phi):
     
     return gamma_DD_ij
 
-def trace(A_DD, gamma_DD_ij):
+def trace(A_DD, gamma_UU):
     '''give my physical gamma_DD, output the trace of a tensor A'''
-    gamma_UU = np.linalg.inv(gamma_DD_ij)
     out = 0
     for i in [0,1,2]:
         for j in [0,1,2]:

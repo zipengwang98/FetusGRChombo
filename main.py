@@ -3,6 +3,7 @@ import initial_data
 from flatten import *
 import gauge_evolution
 import numpy as np
+import matplotlib.pyplot as plt
 from scipy.integrate import odeint
 initial_data = initial_data.generate_initial_data()
 flattened_initial_data = flatten(initial_data)
@@ -16,7 +17,6 @@ result = []
 for i in range(len(result_flat)):
     result.append(unflatten(result_flat[i]))
 result = np.array(result)
-print(result)
 
 
 

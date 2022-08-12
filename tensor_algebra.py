@@ -34,7 +34,7 @@ def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
     christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3,4,5))+np.transpose(dgammaDDD,(1,2,0,3,4,5)))
     return(christoffelsymbolDDD)
 
-def ChristoffelSymbolSecondKindDDD(gammaDD,dx):
+def ChristoffelSymbolSecondKindUDD(gammaDD,dx):
     christoffelsymbolDDD = ChristoffelSymbolFirstKindDDD(gammaDD,dx)
     christoffelsymbolUDD = lower_vector_index(christoffelsymbolDDD, gammaDD)
     return(christoffelsymbolUDD)

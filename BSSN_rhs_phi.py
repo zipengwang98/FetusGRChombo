@@ -6,15 +6,16 @@ partial_betaU_trace = einsum('ii', partial(betaU))
 def phi_rhs(alpha, betaU, phi, K, partial_betaU_trace):
     """ Calculate RHS of BSSN evolution equation for phi.
     """
-    deriv_phi = partial(phi)
+    partial_phiD = partial(phi, dx)
     dtdphi = - 1/6 * alpha * K + einsum('i,i', betaU, deriv_phi) + 1/6 * partial_betaU_trace
     return dtdphi
 
-def R_ij_phi(phi, bar_gamma_ij):
+def Rphi_ij(phi, barGammaDD, gammaUU, gammaDD):
     """
     phi part of traceless Ricci tensor decomposition
     """
-    partial_phi = partial(phi)
-    covphiDD_ij =  
-    covphiUD_kk =
-    return -2 * covphiDD_ij - 2 * bar_gamma_ij * covphiUD_kk + 4 * covaraint(phi) * covariant(phi) - 4 * bar_gamma_ij * covariant(phi) * covariant(phi)   
+    christoffelsymbolUDD = ChristoffelSymbolSecondKindDDD(gammaDD, dx)
+    partial_phiD = partial(phi,dx)
+    covphiDD = covariant_derivative_covector(partial(phi,dx), christoffelsymbolUDD)  
+    return -(2.0 * covphiDD) - (2.0 * barGammaDD * np.einsum('ij','ji',gammaUU, covphiDD) + 4 * np.outer(partial_phiD, partial_phiD) -\
+                                    (4 * barGamma * np.einsum('ij','j','i',gammaUU, partial_phiD, partial_phiD)    

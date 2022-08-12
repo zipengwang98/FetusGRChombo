@@ -2,22 +2,18 @@ from math import gamma
 import re
 import numpy as np
 
-
-def partial(f,n):
-
-    df_n = f
-    return(df_n)
-
 def partial(f,dx):
-    df_i = (np.roll(f,-1,axis=0)-np.roll(f,1,axis=0))/2/dx
-    df_j = (np.roll(f,-1,axis=1)-np.roll(f,1,axis=1))/2/dx
-    df_k = (np.roll(f,-1,axis=2)-np.roll(f,1,axis=2))/2/dx
-
+    "partial derivative for scalers, assume equally spaced in all 3 d"
+    df_i = (np.roll(f,-1,axis=-3)-np.roll(f,1,axis=-3))/2/dx
+    df_j = (np.roll(f,-1,axis=-2)-np.roll(f,1,axis=-2))/2/dx
+    df_k = (np.roll(f,-1,axis=-1)-np.roll(f,1,axis=-1))/2/dx
 
     df = np.stack([df_i,df_j,df_k],axis=0)
     return(df)
 
 def partial_vector(fU,dx):
+    "partial derivative for vectors, assume equally spaced in all 3 d"
+
     dfU_i = partial(fU[0],dx)
     dfU_j = partial(fU[1],dx)
     dfU_k = partial(fU[2],dx)
@@ -25,6 +21,8 @@ def partial_vector(fU,dx):
     return(dfU)
 
 def partial_tensor(fUU,dx):
+    "partial derivative for rank 2, assume equally spaced in all 3 d"
+
     dfUU_i = partial_vector(fUU[0],dx)
     dfUU_j = partial_vector(fUU[1],dx)
     dfUU_k = partial_vector(fUU[2],dx)
@@ -33,7 +31,7 @@ def partial_tensor(fUU,dx):
 
 def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
     dgammaDDD = partial_tensor(gammaDD,dx)
-    christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3))+np.transpose(dgammaDDD,(1,2,0,3)))
+    christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3,4,5))+np.transpose(dgammaDDD,(1,2,0,3,4,5)))
     return(christoffelsymbolDDD)
 
 def raise_vector_index(fD, gammaUU):

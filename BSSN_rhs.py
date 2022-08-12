@@ -15,3 +15,7 @@ def barGamma(N,alpha, tildeADD_ij, betaU_i, barGammaDD_ij, ):
                             np.einsum('ik','jk',barGammaDD_ij, partial()) + np.einsum('kj','ik',barGammaDD_ij, partial()) -\
                             twothirds*barGammaDD_ij*partial()
     return dt_barGammaDD_ij
+
+def BSSN_RHS(Huge_list, t):
+    out = np.zeros_like(Huge_list)
+    return out

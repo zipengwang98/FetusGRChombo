@@ -9,10 +9,9 @@ def partial(f,n):
     return(df_n)
 
 def partial(f,dx):
-    df_i = (np.roll(f,-1,axis=0)-np.roll(f,1,axis=0))/2/dx
-    df_j = (np.roll(f,-1,axis=1)-np.roll(f,1,axis=1))/2/dx
-    df_k = (np.roll(f,-1,axis=2)-np.roll(f,1,axis=2))/2/dx
-
+    df_i = (np.roll(f,-1,axis=-3)-np.roll(f,1,axis=-3))/2/dx
+    df_j = (np.roll(f,-1,axis=-2)-np.roll(f,1,axis=-2))/2/dx
+    df_k = (np.roll(f,-1,axis=-1)-np.roll(f,1,axis=-1))/2/dx
 
     df = np.stack([df_i,df_j,df_k],axis=0)
     return(df)
@@ -33,7 +32,7 @@ def partial_tensor(fUU,dx):
 
 def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
     dgammaDDD = partial_tensor(gammaDD,dx)
-    christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3))+np.transpose(dgammaDDD,(1,2,0,3)))
+    christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3,4,5))+np.transpose(dgammaDDD,(1,2,0,3,4,5)))
     return(christoffelsymbolDDD)
 
 def raise_vector_index(fD,gammaDD):

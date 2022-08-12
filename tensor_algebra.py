@@ -60,6 +60,17 @@ def lower_vector_index(fU, gammaDD):
     return vector_out
 
 
+def raise_tensor_index(fDD, gammaUU):
+    '''gammaUU is the inverse of the physical metric!'''
+    tensor_out = np.zeros_like(fDD)
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                for l in range(3):
+                    tensor_out[i][j] += gammaUU[i][k] * gammaUU[j][l]* fDD[k][l]
+            
+    return tensor_out 
+
 def physical_metric(bar_gamma, phi):
     '''give me phi, and bar_gamma, outputs the physical metric'''
     gamma_DD_ij = np.zeros(3,3)

@@ -17,6 +17,6 @@ result = []
 for i in range(len(result_flat)):
     result.append(unflatten(result_flat[i]))
 result = np.array(result)
-print(result)
 
+print(initial_data[17][1][2])
 

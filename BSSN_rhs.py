@@ -1,5 +1,6 @@
 import numpy as np
 from tensor_algebra import *
+from flatten import *
 
 twothirds = 2.0/3.0
 onethird = 1.0/3
@@ -39,5 +40,10 @@ def dt_phi(alpha, betaU, phi, K, partial_betaU_trace):
     return dt_dphi
 
 def BSSN_RHS(Huge_list, t):
+    
+    unflatten(Huge_list)
+    alpha = Huge_list[17]
+    print(alpha)
+
     out = np.zeros_like(Huge_list)
     return out

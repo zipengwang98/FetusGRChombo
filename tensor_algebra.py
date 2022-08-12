@@ -12,9 +12,15 @@ def partial_vector(fU,dx):
     dfU_i = partial(fU[0],dx)
     dfU_j = partial(fU[1],dx)
     dfU_k = partial(fU[2],dx)
-    dfU = np.stack([dfU_i,dfU_j,dfU_k],axis=0)
+    dfU = np.stack([dfU_i,dfU_j,dfU_k],axis=1)
     return(dfU)
 
+def partial_tensor(fUU,dx):
+    dfUU_i = partial_vector(fUU[0],dx)
+    dfUU_j = partial_vector(fUU[1],dx)
+    dfUU_k = partial_vector(fUU[2],dx)
+    dfUU = np.stack([dfUU_i,dfUU_j,dfUU_k],axis=1)
+    return(dfUU)
 
 def raise_vector_index(fD,gammaDD):
     fU=fD

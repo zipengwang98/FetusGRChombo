@@ -34,6 +34,15 @@ def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
     christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3,4,5))+np.transpose(dgammaDDD,(1,2,0,3,4,5)))
     return(christoffelsymbolDDD)
 
+def ChristoffelSymbolSecondKindDDD(gammaDD,dx):
+    christoffelsymbolDDD = ChristoffelSymbolFirstKindDDD(gammaDD,dx)
+    christoffelsymbolUDD = lower_vector_index(christoffelsymbolDDD, gammaDD)
+    return(christoffelsymbolUDD)
+
+def covariant_derivative_covector(f_D,christoffelsymbolUDD):
+    CD_f_DD = partial_vector(f_D) + np.einsum("ijk,i->jk",christoffelsymbolUDD,f_D)
+    return CD_f_DD
+
 def raise_vector_index(fD, gammaUU):
     '''gammaUU is the inverse of the physical metric!'''
     vector_out = np.array([0,0,0])

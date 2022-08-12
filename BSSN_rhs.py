@@ -33,11 +33,18 @@ def dt_barChristofelU(tildaAUU,alpha,barChristofelUDD,barGammaUU,phi,barChristof
         twothirds*barChristofelU*d_beta_trace + onethird*np.einsum("ji,j->i",barGammaUU,partial(d_beta_trace)) + np.einsum("lj,jli->i",barGammaUU,partial_tensor(partial_vector(betaU )))
     return(dt_barChristofelU)
 
-def dt_phi(alpha, betaU, phi, K, partial_betaU_trace):
+def dt_phi(alpha, betaU, phi, K):
     """ Calculate RHS of BSSN evolution equation for phi.
     """
     dt_dphi = - onesixth * alpha * K + np.einsum('i,i', betaU, partial(phi)) + onesixth * np.einsum("ii",partial_vector(betaU))
-    return dt_dphi
+    return(dt_dphi)
+
+def dt_tildaADD(phi,alpha,barGammaDD,K,tildaADD,gammaUU,betaU,barChristofelU):
+    dt_tildaADD = np.exp(-4*phi)*(-TF_of_a_tensor(covariant_derivative_covector(partial(alpha)),phi, barGammaDD)+alpha*RTF()) +\
+         alpha*(K*tildaADD-2*np.einsum("il,lj->ij",tildaADD,raise_vector_index(tildaADD, gammaUU))) +\
+        np.einsum("k,kij->ij",betaU,partial_tensor(tildaADD))+ np.einsum("ik,jk->ij",tildaADD,partial_vector(betaU)) - twothirds*tildaADD*np.einsum("kk",partial(betaU))
+    return(dt_tildaADD)
+
 
 def BSSN_RHS(Huge_list, t):
     
@@ -47,3 +54,12 @@ def BSSN_RHS(Huge_list, t):
 
     out = np.zeros_like(Huge_list)
     return out
+
+def conformal_ricci():
+    bar_ricci = - 0.5 * np.einsum('lm ,lmij->ij', barGammaUU, partial_tensor(partial_tensor(barGammaDD, dx), dx)) + \
+                0.5 * (np.einsum('ki, jk->ij', barGammaDD, partial_vector(barChristoffelU, dx) + np.einsum('kj,ik->ij', barGammaDD, partial_ vector(barChristoffelU, dx))) + \
+                0.5 * (einsum('k,ijk->ij', barChristoffelU, ChristoffelSymbolFirstKindDDD) + einsum('k,jik->ij', barChristoffelU, ChristoffelSymbolFirstKinDDD)) + \
+                0.5 * ('lm, kli, jkm->ij', barGammaUU, ChristoffelSymbolSecondKindUDD, ChristoffelSymbolFirstKindDDD) + ('lm, klj, ikm->ij', barGammaUU, \ 
+                    ChristoffelSymbolSecondKindUDD, ChristoffelSymbolFirstKindDDD) + \
+                0.5 * (einsum('ki,jk->ij', barGammaDD, partial_vector(barChristoffelU, dx)) + einsum('kj,ik->ij', barGammaDD, partial_vector(barChristoffelU, dx)))
+    return bar_ricci

@@ -34,6 +34,15 @@ def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
     christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3,4,5))+np.transpose(dgammaDDD,(1,2,0,3,4,5)))
     return(christoffelsymbolDDD)
 
+def ChristoffelSymbolSecondKindUDD(gammaDD,dx):
+    christoffelsymbolDDD = ChristoffelSymbolFirstKindDDD(gammaDD,dx)
+    christoffelsymbolUDD = lower_vector_index(christoffelsymbolDDD, gammaDD)
+    return(christoffelsymbolUDD)
+
+def covariant_derivative_covector(f_D,christoffelsymbolUDD):
+    CD_f_DD = partial_vector(f_D) + np.einsum("ijk,i->jk",christoffelsymbolUDD,f_D)
+    return CD_f_DD
+
 def raise_vector_index(fD, gammaUU):
     '''gammaUU is the inverse of the physical metric!'''
     vector_out = np.array([0,0,0])
@@ -51,6 +60,17 @@ def lower_vector_index(fU, gammaDD):
     return vector_out
 
 
+def raise_tensor_index(fDD, gammaUU):
+    '''gammaUU is the inverse of the physical metric!'''
+    tensor_out = np.zeros_like(fDD)
+    for i in range(3):
+        for j in range(3):
+            for k in range(3):
+                for l in range(3):
+                    tensor_out[i][j] += gammaUU[i][k] * gammaUU[j][l]* fDD[k][l]
+            
+    return tensor_out 
+
 def physical_metric(bar_gamma, phi):
     '''give me phi, and bar_gamma, outputs the physical metric'''
     gamma_DD_ij = np.zeros(3,3)
@@ -60,9 +80,8 @@ def physical_metric(bar_gamma, phi):
     
     return gamma_DD_ij
 
-def trace(A_DD, gamma_DD_ij):
+def trace(A_DD, gamma_UU):
     '''give my physical gamma_DD, output the trace of a tensor A'''
-    gamma_UU = np.linalg.inv(gamma_DD_ij)
     out = 0
     for i in [0,1,2]:
         for j in [0,1,2]:

@@ -6,6 +6,31 @@ twothirds = 2.0/3.0
 onethird = 1.0/3
 onesixth = 1./6
 
+def barRDD(barGammaUU,barGammaDD,barChristoffelU, barChristoffelDDD,barChristoffelUDD):
+    bar_ricci = - 0.5 * np.einsum('lm ,lmij->ij', barGammaUU, partial_tensor(partial_tensor(barGammaDD, dx), dx)) + \
+                0.5 * (np.einsum('ki, jk->ij', barGammaDD, partial_vector(barChristoffelU, dx) + np.einsum('kj,ik->ij', barGammaDD, partial_vector(barChristoffelU, dx)))) + \
+                0.5 * (np.einsum('k,ijk->ij', barChristoffelU,  barChristoffelDDD) + np.einsum('k,jik->ij', barChristoffelU, barChristoffelDDD)) + \
+                0.5 * np.einsum('lm, kli, jkm->ij', barGammaUU, barChristoffelUDD,  barChristoffelDDD) + np.einsum('lm, klj, ikm->ij', barGammaUU,barChristoffelUDD, barChristoffelDDD) + \
+                0.5 * (np.einsum('ki,jk->ij', barGammaDD, partial_vector(barChristoffelU, dx)) + np.einsum('kj,ik->ij', barGammaDD, partial_vector(barChristoffelU, dx)))
+    return bar_ricci
+
+
+def Rphi_ij(phi, barGammaDD, gammaUU, gammaDD):
+    """
+    Phi part of traceless Ricci tensor decomposition
+    """
+    christoffelsymbolUDD = ChristoffelSymbolSecondKindUDD(gammaDD,dx)
+    partial_phiD = partial(phi,dx)
+    covphiDD = covariant_derivative_covector(partial(phi,dx), christoffelsymbolUDD)
+    Rphi = -(2.0 * covphiDD) - 2.0 * barGammaDD * np.einsum('ij, ji',gammaUU, covphiDD) + 4 * np.outer(partial_phiD, partial_phiD) -\
+                                    4 * barGammaDD * np.einsum('ij','j','i',gammaUU, partial_phiD, partial_phiD)
+    return Rphi
+
+def RTF_ij(phi, barGammaDD, barGammaUU, gammaUU, gammaDD,barChristoffelU, barChristoffelDDD,barChristoffelUDD):
+    RicciDD = Rphi_ij(phi, barGammaDD, gammaUU, gammaDD) + barRDD(barGammaUU,barGammaDD,barChristoffelU, barChristoffelDDD,barChristoffelUDD)
+    RTFDD = TF_of_a_tensor(RicciDD, phi, barGammaDD)
+    return RTFDD
+    
 def dt_K(gammaDD ,gammaUU , alpha, tildeADD , K, betaU ):
     '''
     Evaluates rhs of Eq. 11.52 to evolve K
@@ -25,13 +50,13 @@ def dt_barGammaDD(N,alpha, tildeADD , betaU , barGammaDD ):
                             twothirds*barGammaDD *np.einsum('kk',partial_vector(betaU ))
     return(dt_barGammaDD )
 
-def dt_barChristofelU(tildaAUU,alpha,barChristofelUDD,barGammaUU,phi,barChristofelU,betaU ,K):
+def dt_barChristoffelU(tildaAUU,alpha,barChristoffelUDD,barGammaUU,phi,barChristoffelU,betaU ,K):
     d_beta_trace = np.einsum("jj",partial_vector(betaU ))
-    dt_barChristofelU = -2*np.einsum("ij,j->i",tildaAUU*partial(alpha)) + 2*alpha*(np.einsum("ijk,kj->i",barChristofelUDD,tildaAUU)-\
+    dt_barChristoffelU = -2*np.einsum("ij,j->i",tildaAUU*partial(alpha)) + 2*alpha*(np.einsum("ijk,kj->i",barChristoffelUDD,tildaAUU)-\
         twothirds*("ij,j",barGammaUU,partial(K)) + 6*np.einsum("ij,j->i",tildaAUU,partial(phi))) +\
-        np.einsum("j,ji->i",betaU ,partial_vector(barChristofelU))- np.einsum("j,ji->i",barChristofelU,partial_vector(betaU )) +\
-        twothirds*barChristofelU*d_beta_trace + onethird*np.einsum("ji,j->i",barGammaUU,partial(d_beta_trace)) + np.einsum("lj,jli->i",barGammaUU,partial_tensor(partial_vector(betaU )))
-    return(dt_barChristofelU)
+        np.einsum("j,ji->i",betaU ,partial_vector(barChristoffelU))- np.einsum("j,ji->i",barChristoffelU,partial_vector(betaU )) +\
+        twothirds*barChristoffelU*d_beta_trace + onethird*np.einsum("ji,j->i",barGammaUU,partial(d_beta_trace)) + np.einsum("lj,jli->i",barGammaUU,partial_tensor(partial_vector(betaU )))
+    return(dt_barChristoffelU)
 
 def dt_phi(alpha, betaU, phi, K):
     """ Calculate RHS of BSSN evolution equation for phi.
@@ -39,8 +64,9 @@ def dt_phi(alpha, betaU, phi, K):
     dt_dphi = - onesixth * alpha * K + np.einsum('i,i', betaU, partial(phi)) + onesixth * np.einsum("ii",partial_vector(betaU))
     return(dt_dphi)
 
-def dt_tildaADD(phi,alpha,barGammaDD,K,tildaADD,gammaUU,betaU,barChristofelU):
-    dt_tildaADD = np.exp(-4*phi)*(-TF_of_a_tensor(covariant_derivative_covector(partial(alpha)),phi, barGammaDD)+alpha*RTF()) +\
+def dt_tildaADD(phi,alpha,barGammaDD,K,tildaADD,gammaUU,betaU,barChristoffelU,gammaDD,barGammaUU,barChristoffelDDD,barChristoffelUDD):
+    dt_tildaADD = np.exp(-4*phi)*(-TF_of_a_tensor(covariant_derivative_covector(partial(alpha)),phi, barGammaDD)+\
+        alpha* RTF_ij(phi, barGammaDD, barGammaUU, gammaUU, gammaDD,barChristoffelU, barChristoffelDDD,barChristoffelUDD)) +\
          alpha*(K*tildaADD-2*np.einsum("il,lj->ij",tildaADD,raise_vector_index(tildaADD, gammaUU))) +\
         np.einsum("k,kij->ij",betaU,partial_tensor(tildaADD))+ np.einsum("ik,jk->ij",tildaADD,partial_vector(betaU)) - twothirds*tildaADD*np.einsum("kk",partial(betaU))
     return(dt_tildaADD)
@@ -54,12 +80,3 @@ def BSSN_RHS(Huge_list, t):
 
     out = np.zeros_like(Huge_list)
     return out
-
-def conformal_ricci():
-    bar_ricci = - 0.5 * np.einsum('lm ,lmij->ij', barGammaUU, partial_tensor(partial_tensor(barGammaDD, dx), dx)) + \
-                0.5 * (np.einsum('ki, jk->ij', barGammaDD, partial_vector(barChristoffelU, dx) + np.einsum('kj,ik->ij', barGammaDD, partial_ vector(barChristoffelU, dx))) + \
-                0.5 * (einsum('k,ijk->ij', barChristoffelU, ChristoffelSymbolFirstKindDDD) + einsum('k,jik->ij', barChristoffelU, ChristoffelSymbolFirstKinDDD)) + \
-                0.5 * ('lm, kli, jkm->ij', barGammaUU, ChristoffelSymbolSecondKindUDD, ChristoffelSymbolFirstKindDDD) + ('lm, klj, ikm->ij', barGammaUU, \ 
-                    ChristoffelSymbolSecondKindUDD, ChristoffelSymbolFirstKindDDD) + \
-                0.5 * (einsum('ki,jk->ij', barGammaDD, partial_vector(barChristoffelU, dx)) + einsum('kj,ik->ij', barGammaDD, partial_vector(barChristoffelU, dx)))
-    return bar_ricci

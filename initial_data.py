@@ -37,8 +37,8 @@ def generate_initial_data():
     for x in range(N):
         for y in range(N):
             for z in range(N):
-                initial_alpha_grid[x][y][z] =  np.exp( 0.00001*(((x-N/2)*dx)**2+((y-N/2)*dx)**2+((y-N/2)*dx)**2)) 
-
+                initial_alpha_grid[x][y][z] =  np.exp(-0.5*(((x-N/2)*dx)**2+((y-N/2)*dx)**2+((y-N/2)*dx)**2)) 
+    
     return np.array([
         initial_phi_grid,
 

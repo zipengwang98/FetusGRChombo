@@ -4,6 +4,7 @@ from flatten import *
 
 twothirds = 2.0/3.0
 onethird = 1.0/3
+onesixth = 1./6
 
 def dt_K(gammaDD ,gammaUU , alpha, tildeADD , K, betaU ):
     '''
@@ -35,9 +36,8 @@ def dt_barChristofelU(tildaAUU,alpha,barChristofelUDD,barGammaUU,phi,barChristof
 def dt_phi(alpha, betaU, phi, K, partial_betaU_trace):
     """ Calculate RHS of BSSN evolution equation for phi.
     """
-    partial_phiD = partial(phi, dx)
-    dtdphi = - 1/6 * alpha * K + np.einsum('i,i', betaU, deriv_phi) + 1/6 * partial_betaU_trace
-    return dtdphi
+    dt_dphi = - onesixth * alpha * K + np.einsum('i,i', betaU, partial(phi)) + onesixth * np.einsum("ii",partial_vector(betaU))
+    return dt_dphi
 
 def BSSN_RHS(Huge_list, t):
     

@@ -22,6 +22,11 @@ def partial_tensor(fUU,dx):
     dfUU = np.stack([dfUU_i,dfUU_j,dfUU_k],axis=1)
     return(dfUU)
 
+def ChristoffelSymbolFirstKindDDD(gammaDD,dx):
+    dgammaDDD = partial_tensor(gammaDD,dx)
+    christoffelsymbolDDD = 0.5*(-dgammaDDD+np.transpose(dgammaDDD,(2,0,1,3))+np.transpose(dgammaDDD,(1,2,0,3)))
+    return(christoffelsymbolDDD)
+
 def raise_vector_index(fD,gammaDD):
     fU=fD
     return(fU)

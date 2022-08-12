@@ -41,10 +41,9 @@ def dt_phi(alpha, betaU, phi, K, partial_betaU_trace):
 
 def BSSN_RHS(Huge_list, t):
     
-    unflattenedlist = unflatten(Huge_list)
-    alpha = unflattenedlist[17]
-    print("alpha: ")
-    print(np.max(alpha))
+    unflatten(Huge_list)
+    alpha = np.max(Huge_list[17])
+    print(alpha)
 
     out = np.zeros_like(Huge_list)
     return out

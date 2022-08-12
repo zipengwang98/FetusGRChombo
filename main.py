@@ -18,5 +18,5 @@ for i in range(len(result_flat)):
     result.append(unflatten(result_flat[i]))
 result = np.array(result)
 
-print(initial_data[17][1][2])
+print(initial_data[17][int(N/2)][int(N/2)])
 

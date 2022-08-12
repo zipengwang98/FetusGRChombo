@@ -1,5 +1,6 @@
 import numpy as np
 from tensor_algebra import *
+from flatten import *
 
 twothirds = 2.0/3.0
 onethird = 1.0/3
@@ -24,5 +25,10 @@ def barGamma(N,alpha, tildeADD_ij, betaU_i, barGammaDD_ij, ):
     return dt_barGammaDD_ij
 
 def BSSN_RHS(Huge_list, t):
+    
+    unflatten(Huge_list)
+    alpha = Huge_list[17]
+    print(alpha)
+
     out = np.zeros_like(Huge_list)
     return out

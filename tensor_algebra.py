@@ -98,7 +98,49 @@ def TF_of_a_tensor(A, phi, bar_gamma):
             out[i][j] = A[i][j] - 1/3.0 * gamma_DD_ij[i][j] * A_trace
     return out
     
+def inverse_of_sym_tensor(A):
+    'assuming A is a symmetric tensor, return its inverse'
+    m11 = A[1][1]
+    m12 = A[1][2]
+    m13 = A[1][3]
+    m22 = A[2][2]
+    m23 = A[2][3]
+    m33 = A[3][3]
 
+    #D = m11 * (m33 * m22 - m23^2) - m12 * (m33 * m12 - m23 * m13) + m13 * (m23 * m12 - m22 * m13)
+    a11 = m33 * m22 - m23**2  
+    a12 = m13 * m23 - m33 * m12  
+    a13 = m12 * m23 - m13 * m22  
+    a22 = m33 * m11 - m13**2  
+    a23 = m12 * m13 - m11 * m23
+    a33 = m11 * m22 - m12**2
+    D = (m11 * a11) + (m12 * a12) + (m13 * a13)
+    out = np.array([
+        [a11,a12,a13],[a12,a22,a23],[a13,a23,a33]
+    ])
+    out = out /D
+    return out
+
+def inverse_of_lists_of_tensor(Alist):
+    'A_list has 5 indices including the tensor ones and the spatial ones'
+    out_list = np.zeros_like(Alist)
+    for i in range(len(Alist[0][0])):
+        for j in range(len(Alist[0][0])):
+            for k in range(len(Alist[0][0])):
+                a_11 = Alist[1][1][i][j][k]
+                a_12 = Alist[1][1][i][j][k]
+                a_21 = Alist[1][1][i][j][k]
+                a_22 = Alist[1][1][i][j][k]
+                a_23 = Alist[1][1][i][j][k]
+                a_33 = Alist[1][1][i][j][k]
+                matrix = np.array([
+                    [a_11, a_12, a_13],[a_12,a_22,a_23],[a_13,a_23,a_33]
+                ])
+                inverse_matrix = inverse_of_sym_tensor(matrix)
+                for a in range(3):
+                    for b in range(3):
+                        out_list[a][b][i][j][k] = inverse_matrix[a][b]
+    return out_list
 #def 
 #np.einsum('ij,ij',KUU,KDD)
 

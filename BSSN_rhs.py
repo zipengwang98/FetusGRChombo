@@ -58,10 +58,10 @@ def dt_barChristoffelU(tildaAUU,alpha,barChristoffelUDD,barGammaUU,phi,barChrist
         twothirds*barChristoffelU*d_beta_trace + onethird*np.einsum("ji,j->i",barGammaUU,partial(d_beta_trace)) + np.einsum("lj,jli->i",barGammaUU,partial_tensor(partial_vector(betaU )))
     return(dt_barChristoffelU)
 
-def dt_phi(alpha, betaU, phi, K):
+def dt_phi(alpha, betaU, phi, K, dx):
     ''' Calculate RHS of BSSN evolution equation for phi.
     '''
-    dt_dphi = - onesixth * alpha * K + np.einsum('i,i', betaU, partial(phi)) + onesixth * np.einsum("ii",partial_vector(betaU))
+    dt_dphi = - onesixth * alpha * K + np.einsum('i,i', betaU, partial(phi, dx)) + onesixth * np.einsum("ii",partial_vector(betaU,dx))
     return(dt_dphi)
 
 def dt_tildaADD(phi,alpha,barGammaDD,K,tildaADD,gammaUU,betaU,barChristoffelU,gammaDD,barGammaUU,barChristoffelDDD,barChristoffelUDD):
@@ -84,7 +84,7 @@ def assemble_tensor_sym(components):
                      [a13, a23, a33]])
     return out
 
-def BSSN_RHS(Huge_list, t):
+def BSSN_RHS(Huge_list, t, dx):
     
     data_input = unflatten(Huge_list)
     phi = data_input[0]
@@ -98,9 +98,9 @@ def BSSN_RHS(Huge_list, t):
     B_vec_U = np.array([data_input[21],data_input[22],data_input[23]])
 
     bar_gamma_UU = inverse_of_lists_of_tensor(bar_gamma_DD)
-    
+
     out = np.zeros_like(Huge_list)
 
-    phi_rhs = dt_phi(alpha,beta_vec_U,phi, K)
+    phi_rhs = dt_phi(alpha, beta_vec_U,phi, K, dx)
     K_rhs = dt_K()
     return out

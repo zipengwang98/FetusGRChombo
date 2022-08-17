@@ -100,12 +100,12 @@ def TF_of_a_tensor(A, phi, bar_gamma):
     
 def inverse_of_sym_tensor(A):
     'assuming A is a symmetric tensor, return its inverse'
-    m11 = A[1][1]
-    m12 = A[1][2]
-    m13 = A[1][3]
-    m22 = A[2][2]
-    m23 = A[2][3]
-    m33 = A[3][3]
+    m11 = A[0][0]
+    m12 = A[0][1]
+    m13 = A[0][2]
+    m22 = A[1][1]
+    m23 = A[1][2]
+    m33 = A[2][2]
 
     #D = m11 * (m33 * m22 - m23^2) - m12 * (m33 * m12 - m23 * m13) + m13 * (m23 * m12 - m22 * m13)
     a11 = m33 * m22 - m23**2  
@@ -127,12 +127,12 @@ def inverse_of_lists_of_tensor(Alist):
     for i in range(len(Alist[0][0])):
         for j in range(len(Alist[0][0])):
             for k in range(len(Alist[0][0])):
-                a_11 = Alist[1][1][i][j][k]
-                a_12 = Alist[1][1][i][j][k]
-                a_21 = Alist[1][1][i][j][k]
+                a_11 = Alist[0][0][i][j][k]
+                a_12 = Alist[0][1][i][j][k]
+                a_13 = Alist[0][2][i][j][k]
                 a_22 = Alist[1][1][i][j][k]
-                a_23 = Alist[1][1][i][j][k]
-                a_33 = Alist[1][1][i][j][k]
+                a_23 = Alist[1][2][i][j][k]
+                a_33 = Alist[2][2][i][j][k]
                 matrix = np.array([
                     [a_11, a_12, a_13],[a_12,a_22,a_23],[a_13,a_23,a_33]
                 ])

@@ -97,6 +97,8 @@ def BSSN_RHS(Huge_list, t):
     beta_vec_U = np.array([data_input[18],data_input[19],data_input[20]])
     B_vec_U = np.array([data_input[21],data_input[22],data_input[23]])
 
+    bar_gamma_UU = inverse_of_lists_of_tensor(bar_gamma_DD)
+    
     out = np.zeros_like(Huge_list)
 
     phi_rhs = dt_phi(alpha,beta_vec_U,phi, K)
